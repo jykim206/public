@@ -1,0 +1,26 @@
+apiVersion: 1.0.0
+metadata:
+  generateName: che-server-in-che
+projects:
+  - name: che
+    source:
+      location: 'https://github.com/eclipse/che.git'
+      type: github
+components:
+  - mountSources: true
+    memoryLimit: 2Gi
+    type: dockerimage
+    volumes:
+      - name: maven
+        containerPath: /home/user/.m2
+    image: 'quay.io/eclipse/che-java11-maven:nightly'
+    alias: maven
+  - id: redhat/java11/latest
+    type: chePlugin
+commands:
+  - name: build without tests
+    actions:
+      - workdir: '${CHE_PROJECTS_ROOT}/che'
+        type: exec
+        command: mvn clean install -DskipTests
+        component: maven
